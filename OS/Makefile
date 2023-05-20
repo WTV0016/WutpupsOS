@@ -9,10 +9,10 @@ kernel.bin: boot.o kernel.o
 	i386-elf-gcc -T linker.ld -o kernel.bin -ffreestanding -O2 -nostdlib boot.o kernel.o -lgcc
 
 boot.o:
-	i386-elf-as boot.s -o boot.o
+	i386-elf-as arch/i386/boot.s -o boot.o
 
 kernel.o:
-	i386-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	i386-elf-gcc -c kernel/kernel.c arch/i386/stdio.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 clean:
 	rm -f *.o *.bin *.iso
