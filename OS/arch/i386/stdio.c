@@ -31,7 +31,7 @@ void TerminalInit()
 {
     terminalColor = GetVgaEntryColor(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
     terminalRow = terminalColumn = 0;
-    VGA_BUFFER = 0xB8000;
+    VGA_BUFFER = (uint16_t*)0xB8000;
 
     for(int x = 0; x < VGA_WIDTH; x++)
     {
@@ -49,29 +49,85 @@ void TerminalPutEntryAt(uint16_t vgaEntry, uint8_t x, uint8_t y)
 
 void TerminalPutEntry(uint16_t vgaEntry)
 {
-
+    VGA_BUFFER[terminalColumn * VGA_WIDTH + terminalRow] = vgaEntry;
 }
 
 void TerminalSetCursorPosition(uint8_t x, uint8_t y)
 {
+    terminalColumn = x;
+    terminalRow = y;
 }
 
 void TerminalSetColor(uint8_t color)
 {
-
+    terminalColor = color;
 }
 
 void putc(char c)
 {
-
+    TerminalPutEntry(GetVgaEntry(c, terminalColor));
 }
 
 void printS(char* s)
 {
+    uint16_t length = GetStringLength(s);
 
+    for(uint16_t i = 0; i < length; i++)
+    {
+        putc(s[i]);
+    }
 }
 
-void printI(int i, int inHex)
+void printI(int val, int inHex)
 {
-
+    char buffer[10]; // Buffer to hold the decimal digits
+    int index = 0;
+    int isNegative = 0;
+    
+    if(inHex)
+    {
+        // Convert the integer to hexadecimal format
+        while (val >= 0) {
+            int remainder = val % 16;
+            
+            if (remainder < 10)
+                buffer[index++] = remainder + '0'; // Convert to ASCII digit
+            else
+                buffer[index++] = remainder - 10 + 'A'; // Convert to ASCII character A-F
+            
+            val /= 16;
+        }
+        
+        // Print the hexadecimal digits in reverse order
+        for (int i = index - 1; i >= 0; i--)
+        {
+                putc(buffer[i]);
+        }
+    }
+    else
+    {
+        // Handle negative numbers
+        if (val < 0) {
+            isNegative = 1;
+            val = -val;
+        }
+        
+        // Convert the integer to decimal format
+        while(val >= 0) {
+            buffer[index++] = val % 10 + '0'; // Convert to ASCII digit
+            val /= 10;
+        }
+        
+        // Print the decimal digits in reverse order
+        if (isNegative)
+        {
+            putc('-');
+        }
+        
+        for (int i = index - 1; i >= 0; i--)
+        {
+            putc(buffer[i]);
+        }    
+    }
+    
 }

@@ -12,7 +12,8 @@ boot.o:
 	i386-elf-as arch/i386/boot.s -o boot.o
 
 kernel.o:
-	i386-elf-gcc -c kernel/kernel.c arch/i386/stdio.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	i386-elf-gcc -c kernel/kernel.c -o kernelMain.o -nostdlib -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+	i386-elf-gcc -c arch/i386/stdio.c -o stdio.o -nostdlib -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 clean:
 	rm -f *.o *.bin *.iso
