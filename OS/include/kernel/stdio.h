@@ -33,7 +33,9 @@ void TerminalSetEntryAt(uint16_t vgaEntry, uint8_t x, uint8_t y);
 void TerminalSetEntry(uint16_t vgaEntry);
 void TerminalSetCursorPosition(uint8_t x, uint8_t y);
 void TerminalSetColor(uint8_t color);
+void TerminalClear();
 
+void ShiftContent();
 void putc(char c);
 void printS(char* s);
 void printI(int i, int inHex);

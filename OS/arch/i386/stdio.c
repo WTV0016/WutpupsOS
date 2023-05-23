@@ -1,4 +1,6 @@
 #include"../../include/kernel/stdio.h"
+#include"../../include/kernel/stdmem.h"
+
 
 uint8_t terminalColor;
 uint16_t* VGA_BUFFER;
@@ -49,7 +51,7 @@ void TerminalPutEntryAt(uint16_t vgaEntry, uint8_t x, uint8_t y)
 
 void TerminalPutEntry(uint16_t vgaEntry)
 {
-    VGA_BUFFER[terminalColumn * VGA_WIDTH + terminalRow] = vgaEntry;
+    VGA_BUFFER[terminalRow * VGA_WIDTH + terminalColumn] = vgaEntry;
 }
 
 void TerminalSetCursorPosition(uint8_t x, uint8_t y)
@@ -63,9 +65,39 @@ void TerminalSetColor(uint8_t color)
     terminalColor = color;
 }
 
+void TerminalClear()
+{
+    MemorySet(VGA_BUFFER, ' ', VGA_WIDTH * VGA_HEIGHT);
+}
+
+void ShiftContent()
+{
+    MemoryCopy(VGA_BUFFER, VGA_BUFFER + VGA_WIDTH, VGA_WIDTH * (VGA_HEIGHT - 1));
+}
+
 void putc(char c)
 {
-    TerminalPutEntry(GetVgaEntry(c, terminalColor));
+    if(c == '\n')
+    {
+        if(terminalRow >= VGA_HEIGHT - 1)
+        {
+            ShiftContent();
+        }
+        else
+        {
+            terminalRow++;
+            terminalColumn = 0;
+        }
+    }
+    else if(c == '\r')
+    {
+        terminalColumn = 0;
+    }
+    else
+    {
+        TerminalPutEntry(GetVgaEntry(c, terminalColor));
+        terminalColumn++;
+    }
 }
 
 void printS(char* s)
