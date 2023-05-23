@@ -76,6 +76,10 @@ _start:
 	runtime support to work as well.
 	*/
 
+	cli
+	
+	sti
+
 	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
 	aligned at the time of the call instruction (which afterwards pushes
